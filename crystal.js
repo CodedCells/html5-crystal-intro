@@ -13,7 +13,7 @@ var states = {
 	986: "blank_black",
 	1053: "unown_i",
 	1283: "outdoors_running",
-	1347: "outdoors_suicune_discovered",
+	1347: "outdoors_discovered",
 	1580: "blank_black",
 	1630: "unown_more",
 	1904: "outdoors_suicune_solo",
@@ -29,7 +29,7 @@ var states = {
 	3086: "title_in",
 	3115: "title",
 	
-	99999: "scene_select"
+	"-1": "scene_select"
 }
 
 var frame = 43;
@@ -160,13 +160,13 @@ function frameSpawn() {// runs only with state change
 				"groundbg": sprgen("groundbg", -32, 112, {"repeat": "x+x-"})
 			};
 		
-		if (state.startsWith("outdoors_suicune"))
+		if (state == "outdoors_suicune" || state == "outdoors_discovered")
 			objects["suicune_run"]["flags"]["opacity"] = 1;
 		
 		if (state == "outdoors_suicune_solo")
 			objects["suicune_run"] = sprgen("suicune_run0", 48, 68);
 		
-		if (state == "outdoors_suicune_discovered") {
+		if (state == "outdoors_discovered") {
 			objects["wooper"] = sprgen("wooper", 20, 144);
 			objects["pichu"] = sprgen("pichu_front", 100, 146);
 		}
@@ -311,7 +311,7 @@ function frameTick() {// called each tick
 	}
 		
 	
-	if (state == "outdoors_suicune_discovered") {
+	if (state == "outdoors_discovered") {
 		moveObject("suicune_run", -8, 0);
 		if (stateframe > 1418-1347 && objects["wooper"].y > 115)
 			moveObject("wooper", 0, -6);
@@ -359,7 +359,7 @@ function frameTick() {// called each tick
 			moveObject("suicune_battle", 0, -1);
 	}
 	
-	if (frame > -1 && frame < 99999) {
+	if (frame > -1) {
 		frame++;
 		stateframe++;
 	}

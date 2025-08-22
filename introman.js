@@ -42,7 +42,7 @@ function draw() {
 	ctx.globalAlpha = 1;
 	ctx.clearRect(0, 0, canvas.width, canvas.height);
 	
-	if (frame >= 99999)
+	if (frame == -1)
 		drawSceneSelect();
 	
 	for (var i in objects) {
@@ -156,14 +156,14 @@ function drawImgXYWH(si, sx, sy, dx, dy, w, h, m) {
 function drawSpriteClones(src, spr, ax, ay, rep, mode) {
 	var rx = 0;
 	if (rep.includes("x+"))
-		while (ax + rx < canvas.width) {// draw right
+		while (ax + rx <= canvas.width) {// draw right
 			drawImgXYWH(src, spr["x"], spr["y"], ax + rx, ay, spr["w"], spr["h"], mode);
 			rx += spr["w"];
 		}
 	
 	rx = 0;
 	if (rep.includes("x-"))
-		while (-spr["w"] < ax + rx) {// draw left
+		while (-spr["w"] <= ax + rx) {// draw left
 			drawImgXYWH(src, spr["x"], spr["y"], ax + rx, ay, spr["w"], spr["h"], mode);
 			rx -= spr["w"];
 		}
@@ -239,7 +239,7 @@ function drawSprite(spriteName, dx, dy, flags) {
 			
 			var ry = 0;
 			if (rep.includes("y+"))
-				while (ay + ry < canvas.height) {// draw down
+				while (ay + ry <= canvas.height) {// draw down
 					drawImgXYWH(src, spr["x"], spr["y"], ax, ay + ry, spr["w"], spr["h"], mode);
 					ry += spr["h"]
 					drawSpriteClones(src, spr, ax, ay, rep);
@@ -247,7 +247,7 @@ function drawSprite(spriteName, dx, dy, flags) {
 			
 			ry = 0;
 			if (rep.includes("y-"))
-				while (-spr["h"] < ay + ry) {// draw up
+				while (-spr["h"] <= ay + ry) {// draw up
 					drawImgXYWH(src, spr["x"], spr["y"], ax, ay + ry, spr["w"], spr["h"], mode);
 					ry -= spr["h"];
 					drawSpriteClones(src, spr, ax, ay, rep, mode);
@@ -304,8 +304,9 @@ function syncMusic() {
 function jumpTo(dest) {
 	scene_input = "";
 	console.log("jumpting to", dest);
-	if (dest == 99999 || frame == 99999) {
-		if (frame < dest) {
+	
+	if (dest == -1 || frame == -1) {
+		if (frame > dest) {
 			bWidth *= 2;
 			bHeight *= 2;
 		} else {
@@ -333,7 +334,7 @@ function tryStart() {
 
 function replay() {
 	started = true;
-	if (frame < 99999)
+	if (frame >= 0)
 		jumpTo(replayframe)
 }
 
@@ -366,26 +367,28 @@ function drawObject(objID) {
 }
 
 function regularInput(e) {
-	if (e.keyCode == 27) {
+	const code = e.code;
+	
+	if (code == "Escape") {
 		if (!dev) border = true;
-		dev = true;
-		jumpTo(99999);
+		dev = !dev;
+		jumpTo(-1);
 	}
 	
-	if (e.keyCode == 66)// b
+	if (code == "KeyB")// Toggle original screen size border
 		border = !border;
 		
-	if (e.keyCode == 76)// l
+	if (code == "KeyL")// Toggle looping current scene
 		loopstate = !loopstate;
 	
-	if (e.keyCode == 77)// m
+	if (code == "KeyM")// Toggle muting sound
 		music.muted = !music.muted;
 	
-	if (e.keyCode == 80) {// p
+	if (code == "KeyP") {// Toggle playback, pause/play
 		paused = !paused;
-		console.log(paused);
-		if (paused)
+		if (paused) {
 			music.pause();
+		}
 		else {
 			syncMusic()
 			music.play();
@@ -395,49 +398,61 @@ function regularInput(e) {
 	var statelist = Object.keys(states);
 	var curpos = statelist.indexOf(stateat.toString());
 	
-	if (e.keyCode == 37)// left
-		if (curpos - 1 >= 0)
+	if (code =="ArrowLeft") {// Go back to last scene
+		if (curpos - 1 >= 0) {
 			jumpTo(statelist[curpos-1]);
+		}
+	}
 	
-	if (e.keyCode == 39)// right
-		if (curpos+1 < statelist.length && statelist[curpos+1] != "99999")
+	if (code == "ArrowRight") {// Advance to next scene
+		if (curpos+1 < statelist.length && statelist[curpos+1] != "-1") {
 			jumpTo(statelist[curpos+1]);
+		}
+	}
 }
 
 function selectInput(e) {
-	if (e.keyCode == 8) {// backspace
+	const code = e.code;
+	
+	if (code == "Escape") {
+		dev = !dev;
+	}
+	
+	if (code == "Backspace") {// backspace
 		scene_input = "";
 		scene_imode = "numeric";
 	}
 	
 	if (47 < e.keyCode && e.keyCode < 58) {// numbers
-		if (scene_imode == "arrow")
+		if (scene_imode == "arrow") {
 			scene_input = "";
-		
+		}
 		scene_imode = "numeric";
 		scene_input += e.key;
 	}
 	
-	if (36 < e.keyCode && e.keyCode < 41)// arriow keys
+	if (36 < e.keyCode && e.keyCode < 41) {// arriow keys
 		scene_imode = "arrow";
+	}
 	
-	if (e.keyCode == 37)// left
+	if (code =="ArrowLeft")// left
 		scene_idx -= 15;
 	
-	if (e.keyCode == 38)// up
+	if (code =="ArrowUp")// up
 		scene_idx -= 1;
 	
-	if (e.keyCode == 39)// right
+	if (code =="ArrowRight")// right
 		scene_idx += 15;
 	
-	if (e.keyCode == 40)// down
+	if (code =="ArrowDown")// down
 		scene_idx += 1;
 	
-	if (e.keyCode == 13)// enter
+	if (code =="Enter") {// enter
 		for (var scn in states) {
 			if (scn.startsWith(scene_input))
 				return jumpTo(parseInt(scn));
 		}
+	}
 }
 
 document.onkeydown = function (e) {
@@ -480,7 +495,7 @@ function drawSceneSelect() {
 	x = 0;
 	y = 32;
 	for (var scn in states) {
-		if (scn >= 99999) continue;
+		if (scn < 0) continue;
 		
 		setFontColor("#F8F8F8", "#000000");
 		if (scn.startsWith(inp) && scene_imode == "numeric") 
