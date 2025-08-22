@@ -55,8 +55,9 @@ function frameSpawn() {// runs only with state change
 			objects = {
 				"fill": boxgen("#000000", 0, 0, -1, -1),
 				"the_crystal": sprgen("the_crystal", 56, -50),
-				"gamelogo": sprgen("gamelogo", 8, 16, {"phase": 108}),
-				"suicune_run": sprgen("suicune_run0", 48, 88),
+				"gamelogo": sprgen("gamelogo_world", 8, 16, {"phase": 108}),
+				"gameversion": sprgen("gameversion_world", 36, 64, {"phase": 108}),
+				"suicune_run": sprgen("suicune_run_title0", 48, 88),
 				}
 	
 	if (state == "dittogf")
@@ -78,10 +79,10 @@ function frameSpawn() {// runs only with state change
 			}
 	
 	if (state.startsWith("battle")) {
-		objects = {"fill": boxgen("#AC5A61", 0, 0, -1, -1)}
+		objects = {"fill": boxgen("#C06048", 0, 0, -1, -1)}
 		
 		if (state == "battle_anime") {
-			objects = {"fill": boxgen("#AC5A61", 0, 24, -1, 96)}
+			objects = {"fill": boxgen("#C06048", 0, 24, -1, 96)}
 			objects["suicune_anime"] = sprgen("suicune_anime", 120, 24);
 		}
 		else {
@@ -149,10 +150,10 @@ function frameSpawn() {// runs only with state change
 	if (state.startsWith("outdoors")) {
 		if (!(Object.keys(objects).includes("treetopbg")))
 			objects = {
-				"skyfill": boxgen("#AC5A61", 0, 0, -1, -1),
+				"skyfill": boxgen("#C06048", 0, 0, -1, -1),
 				"treetopbg": sprgen("treetopbg", -32, 32, {"repeat": "x+x-"}),
-				"forestfill": boxgen("#06221F", 0, 64, -1, -1),
-				"dirtfill": boxgen("#824855", 0, 144, -1, -1),
+				"forestfill": boxgen("#002028", 0, 64, -1, -1),
+				"dirtfill": boxgen("#684048", 0, 144, -1, -1),
 				"treebasebg": sprgen("treebasebg", -32, 64, {"repeat": "x+x-"}),
 				"suicune_run": sprgen("suicune_run2", 158, 68, {"opacity": 0}),
 				"grassfg": sprgen("grass_still", -32, 96, {"repeat": "x+x-"}),
@@ -167,7 +168,7 @@ function frameSpawn() {// runs only with state change
 		
 		if (state == "outdoors_suicune_discovered") {
 			objects["wooper"] = sprgen("wooper", 20, 144);
-			objects["pichu"] = sprgen("pichu_front", 100, 145);
+			objects["pichu"] = sprgen("pichu_front", 100, 146);
 		}
 	}
 	
@@ -221,8 +222,10 @@ function frameTick() {// called each tick
 		if (objects["the_crystal"].y < 6)
 			moveObject("the_crystal", 0, 2);
 		
-		if (objects["gamelogo"].flags.phase > 0)
+		if (objects["gamelogo"].flags.phase > 0) {
 			objects["gamelogo"].flags.phase -= 4;
+			objects["gameversion"].flags.phase -= 4;
+		}
 		
 		if (stateframe > 1 && (stateframe - 1) % 8 == 0)
 			spriteChange("suicune_run", "add", 1, 4);
@@ -315,6 +318,12 @@ function frameTick() {// called each tick
 		
 		if (stateframe > 1448-1347 && objects["pichu"].y > 104)
 			moveObject("pichu", 0, -6);
+		
+		if (stateframe > 1448-1336)
+			objects["pichu"].sprite = "pichu_turn";
+		
+		if (stateframe > 1448-1330)
+			objects["pichu"].sprite = "pichu_side";
 	}
 	
 	if (state == "battle_anime") {
