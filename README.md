@@ -5,7 +5,7 @@
 
 Recreation of the Pokemon Crystal intro in pure HTML and JS.
 
-Visit https://codedcells.github.io/html5-crystal-intro/crystal.html
+Visit https://codedcells.github.io/html5-crystal-intro/
 
 Press Escape to open Scene Select.
 M to mute, L to loop scene, P to pause.
