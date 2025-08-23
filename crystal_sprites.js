@@ -78,10 +78,11 @@ var spriteDef = {
 	
 	
 	"the_crystal":	{"w": 48, "h": 80, "x": 186, "y": 432},
-	"gamelogo_world":	{"w": 144, "h": 56, "x": 368, "y": 64},
-	"gamelogo_jp":	{"w": 144, "h": 56, "x": 368, "y": 0},
+	"gamelogo_world":	{"w": 144, "h": 64, "x": 368, "y": 64},
+	"gamelogo_jp":	{"w": 144, "h": 64, "x": 368, "y": 0},
 	
 	"gameversion_world": {"w": 96, "h": 8, "x": 416, "y": 128},
+	"gameversion_jp": {"w": 96, "h": 0, "x": 416, "y": 128},
 	"gameversion_fr": {"w": 96, "h": 8, "x": 416, "y": 136},
 	"gameversion_de": {"w": 96, "h": 8, "x": 416, "y": 144},
 	"gameversion_es": {"w": 96, "h": 8, "x": 416, "y": 152},

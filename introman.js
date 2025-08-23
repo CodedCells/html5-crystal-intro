@@ -7,6 +7,7 @@ var loopstate = false;
 var border = false;
 var paused = false;
 
+var toggleUI = false;
 var dev = false;
 var started = false;
 var scene_imode = "numeric";
@@ -92,20 +93,24 @@ function draw() {
 		// debug
 		ctx.globalAlpha = 1;
 		setFontColor("#777777", "#000000");
-		drawFontMap(state, 2, canvas.height-10);
+		//drawFontMap(state, 8, canvas.height-16);
 		
 		if (paused)
-			drawFontMap("=", 2, 2);
+			drawFontMap("= paused", 8, canvas.height-16);
 		
-		drawFontMap(stateframe, canvas.width-2, canvas.height-10, "right");
-		drawFontMap(frame, canvas.width-2, 2, "right");
+		drawFontMap(stateframe, canvas.width-8, canvas.height-16, "right");
+		drawFontMap(frame, canvas.width-8, canvas.height-24, "right");
 	}
+	
+	if (toggleUI)
+		drawUI();
 	
 	requestAnimationFrame(draw);
 }
 
 function getDisplay() {
 	canvas = document.getElementById("display");
+	canvas.onclick = canvasClick;
 	ctx = canvas.getContext("2d");
 	
 	// turn off image aliasing
@@ -300,6 +305,8 @@ function spriteFadeIO(obj, instart, inend, outstart, outend, mode) {
 }
 
 function spriteFade(obj, dir, start, end, mode) {
+	if (paused) return;
+	
 	var perc = (stateframe - start) / (end - start);
 	
 	if (dir == "out") perc = 1 - perc;
@@ -313,6 +320,8 @@ function spriteFade(obj, dir, start, end, mode) {
 }
 
 function moveObject(objID, x, y, wrap) {
+	if (paused) return;
+	
 	objects[objID]["x"] += x;
 	objects[objID]["y"] += y;
 	
@@ -347,11 +356,16 @@ function jumpTo(dest) {
 	resize();
 	
 	frame = dest;
+	frameSpawn();
+	
 	music.pause();
 	music.onended = tryStart;
 	
 	syncMusic();
 	music.play();
+	
+	if (dest == -1)
+		music.pause();
 }
 
 function tryStart() {
@@ -375,13 +389,13 @@ function drawColor(info) {
 	y = pHeight + info["y"];
 	w = info["w"];
 	h = info["h"];
-	if (w < 0) {
+	if (w == null) {
 		w = canvas.width;
-		if (info["x"] == 0) x = 0;
+		if (info["x"] == null) x = 0;
 	}
-	if (h < 0) {
+	if (h == null) {
 		h = canvas.height;
-		if (info["y"] == 0) y = 0;
+		if (info["y"] == null) y = 0;
 	}
 	
 	ctx.fillRect(x, y, w, h);
@@ -395,13 +409,27 @@ function drawObject(objID) {
 	drawSprite(info["sprite"], info["x"], info["y"], info["flags"]);
 }
 
+function playPause() {
+	paused = !paused;
+	if (paused) {
+		music.pause();
+	}
+	else {
+		syncMusic()
+		music.play();
+	}
+}
+
 function regularInput(e) {
 	const code = e.code;
 	
 	if (code == "Escape") {
-		if (!dev) border = true;
 		dev = !dev;
-		jumpTo(-1);
+		playPause();
+		toggleUI = paused;
+		
+		//if (!dev) border = true;
+		//jumpTo(-1);
 	}
 	
 	if (code == "KeyB")// Toggle original screen size border
@@ -414,14 +442,7 @@ function regularInput(e) {
 		music.muted = !music.muted;
 	
 	if (code == "KeyP") {// Toggle playback, pause/play
-		paused = !paused;
-		if (paused) {
-			music.pause();
-		}
-		else {
-			syncMusic()
-			music.play();
-		}
+		playPause();
 	}
 	
 	var statelist = Object.keys(states);
@@ -442,10 +463,6 @@ function regularInput(e) {
 
 function selectInput(e) {
 	const code = e.code;
-	
-	if (code == "Escape") {
-		dev = !dev;
-	}
 	
 	if (code == "Backspace") {// backspace
 		scene_input = "";
@@ -485,7 +502,6 @@ function selectInput(e) {
 }
 
 document.onkeydown = function (e) {
-	
     e = e || window.event;
 	
     if (state == "scene_select") selectInput(e);
@@ -543,5 +559,43 @@ function drawSceneSelect() {
 			y = 32;
 			x += Math.floor(bWidth / 2) + pWidth - 8;
 		}
+	}
+}
+
+function drawUI() {
+	ctx.fillStyle = "#101043";
+	ctx.fillRect(0, 0, canvas.width, 16);
+	setFontColor("#F8F8F8", "#000000");
+	ctx.globalCompositeOperation = "lighter";
+
+	drawFontMap("WIP", 8, 8);
+	
+	drawFontMap(supported_languages[language], canvas.width - 9, 8, "right");
+	ctx.globalCompositeOperation = "source-over";
+}
+
+function nextLanguage() {
+	const keys = Object.keys(supported_languages);
+	let index = keys.indexOf(language) + 1;
+	
+	if (index >= keys.length)
+		index = 0;
+	
+	language = keys[index];
+}
+
+function canvasClick(event) {
+	console.log("click!");
+	const rect = canvas.getBoundingClientRect();
+	const mouseX = parseInt((event.clientX - rect.left) * (canvas.width / rect.width));
+	const mouseY = parseInt((event.clientY - rect.top) * (canvas.height / rect.height));
+
+	if (mouseY > 24) {
+		playPause();
+		dev = !dev;
+		toggleUI = paused;
+	} else if (mouseX > canvas.width - 8 - (supported_languages[language].length * 8)) {
+		console.log(language);
+		nextLanguage();
 	}
 }

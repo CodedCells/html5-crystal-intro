@@ -48,7 +48,7 @@ var states = {
 var frame = 43;
 var state = "blank_white";
 var replayframe = 601;
-var objects = {"fill": boxgen("#000000", 0, 0, -1, -1)};
+var objects = {"fill": boxgen("#000000")};
 
 function frameSpawn() {// runs only with state change
 	if (frame in states)
@@ -58,37 +58,26 @@ function frameSpawn() {// runs only with state change
 	
 	stateframe = 0;
 	if (state == "blank_white")
-		objects = {"fill": boxgen(darkmode ? "#c8c8c8" : "#F8F8F8", 0, 0, -1, -1)}
+		objects = {"fill": boxgen(darkmode ? "#c8c8c8" : "#F8F8F8")}
 	
 	if (state == "blank_black")
-		objects = {"fill": boxgen("#000000", 0, 0, -1, -1)}
+		objects = {"fill": boxgen("#000000")}
 	
 	if (state.startsWith("title")) {
 		if (!(Object.keys(objects).includes("the_crystal"))) {
-			let gamelogo = "gamelogo_world";
-			let gameversion = "gameversion_world";
-			if (language == "jp") {
-				gamelogo = "gamelogo_jp";
-				gameversion = "";
-			} else if ("gameversion_" + language in spriteDef) {
-				gameversion = "gameversion_" + language;
-			}
-			
 			objects = {
-				"fill": boxgen("#000000", 0, 0, -1, -1),
+				"fill": boxgen("#000000"),
 				"the_crystal": sprgen("the_crystal", 56, -50),
-				"gamelogo": sprgen(gamelogo, 8, 16, {"phase": 108}),
+				"gamelogo": sprgen("gamelogo_world", 8, 16, {"phase": 108}),
+				"gameversion": sprgen("gameversion_world", 36, 64, {"phase": 108}),
 				"suicune_run": sprgen("suicune_run_title0", 48, 88)
 				}
-			
-			if (gameversion)
-				objects["gameversion"] = sprgen(gameversion, 36, 64, {"phase": 108});
 		}
 	}
 	
 	if (state == "dittogf")
 		objects = {
-			"fill": boxgen("#000000", 0, 0, -1, -1),
+			"fill": boxgen("#000000"),
 			"dittogf": sprgen("dittobl0", 68, -22)
 			}
 	
@@ -131,7 +120,7 @@ function frameSpawn() {// runs only with state change
 			0; // already set, so skip
 		}
 		objects = {
-			"fill": boxgen(darkmode ? "#c8c8c8" : "#F8F8F8", 0, 0, -1, -1)
+			"fill": boxgen(darkmode ? "#c8c8c8" : "#F8F8F8")
 		}
 		
 		const letter_objects = letters.reduce((acc, [char, pos], index) => {
@@ -143,11 +132,13 @@ function frameSpawn() {// runs only with state change
 	}
 	
 	if (state.startsWith("battle")) {
-		objects = {"fill": boxgen("#C06048", 0, 0, -1, -1)}
+		objects = {"fill": boxgen("#C06048")}
 		
 		if (state == "battle_anime") {
-			objects = {"fill": boxgen("#C06048", 0, 24, -1, 96)}
-			objects["suicune_anime"] = sprgen("suicune_anime", 120, 24);
+			objects = {
+				"fill": boxgen("#C06048", null, 24, null, 96),
+				"suicune_anime": sprgen("suicune_anime", 120, 24)
+			}
 		}
 		else {
 			objects["battlebg"] = sprgen("battlebg", 0, 80, {"repeat": "x+x-y+y-"});
@@ -172,7 +163,7 @@ function frameSpawn() {// runs only with state change
 	}
 	
 	if (state.startsWith("unown"))
-		objects = {"fill": boxgen("#000000", 0, 0, -1, -1)}
+		objects = {"fill": boxgen("#000000")}
 	
 	if (state == "unown_a") {
 		objects["unown"] = sprgen("unown_a", 64, 48, {"opacity": 0});
@@ -215,10 +206,10 @@ function frameSpawn() {// runs only with state change
 	if (state.startsWith("outdoors")) {
 		if (!(Object.keys(objects).includes("treetopbg")))
 			objects = {
-				"skyfill": boxgen("#C06048", 0, 0, -1, -1),
+				"skyfill": boxgen("#C06048"),
 				"treetopbg": sprgen("treetopbg", -32, 32, {"repeat": "x+x-"}),
-				"forestfill": boxgen("#002028", 0, 64, -1, -1),
-				"dirtfill": boxgen("#684048", 0, 144, -1, -1),
+				"forestfill": boxgen("#002028", null, 64),
+				"dirtfill": boxgen("#904848", null, 144),
 				"treebasebg": sprgen("treebasebg", -32, 64, {"repeat": "x+x-"}),
 				"suicune_run": sprgen("suicune_run2", 158, 68, {"opacity": 0}),
 				"grassfg": sprgen("grass_still", -32, 96, {"repeat": "x+x-"}),
@@ -259,9 +250,9 @@ function unownPulseTick(start, end, p) {
 }
 
 function frameTick() {// called each tick
-	if (paused) return; // paused
+	//if (paused) return; // paused
 	
-	if (frame > -1 && music.paused) {
+	if (!paused && frame > -1 && music.paused) {
 		syncMusic();
 		music.play();
 		
@@ -287,7 +278,17 @@ function frameTick() {// called each tick
 		if (objects["the_crystal"].y < 6)
 			moveObject("the_crystal", 0, 2);
 		
-		if (objects["gamelogo"].flags.phase > 0) {
+		let gamelogo = "gamelogo_world";
+		let gameversion = "gameversion_world";
+		if (language == "jp")
+			gamelogo = "gamelogo_jp";
+		
+		if ("gameversion_" + language in spriteDef)
+			gameversion = "gameversion_" + language;
+		objects["gamelogo"].sprite = gamelogo;
+		objects["gameversion"].sprite = gameversion;
+		
+		if (objects["gamelogo"].flags.phase > 0 && !paused) {
 			objects["gamelogo"].flags.phase -= 4;
 			objects["gameversion"].flags.phase -= 4;
 		}
@@ -425,7 +426,7 @@ function frameTick() {// called each tick
 			moveObject("suicune_battle", 0, -1);
 	}
 	
-	if (frame > -1) {
+	if (!paused && frame > -1) {
 		frame++;
 		stateframe++;
 	}
