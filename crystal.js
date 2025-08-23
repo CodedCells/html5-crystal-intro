@@ -111,12 +111,13 @@ function frameSpawn() {// runs only with state change
 	if (state.startsWith("unown"))
 		objects = {"fill": boxgen("#000000", 0, 0, -1, -1)}
 	
-	if (state == "unown_a")
+	if (state == "unown_a") {
 		objects["unown"] = sprgen("unown_a", 64, 48, {"opacity": 0});
 		objects["pulse0"] = sprgen("pulse_tl0", 63, 55, {"opacity": 0});
 		objects["pulse1"] = sprgen("pulse_tr0", 65, 55, {"opacity": 0});
 		objects["pulse2"] = sprgen("pulse_bl0", 63, 57, {"opacity": 0});
 		objects["pulse3"] = sprgen("pulse_br0", 65, 57, {"opacity": 0});
+	}
 	
 	if (state == "unown_i") {
 		objects["unown_i"] = sprgen("unown_i", 104, 24, {"opacity": 0});
