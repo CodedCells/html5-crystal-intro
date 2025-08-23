@@ -6,6 +6,18 @@ var audoff = 42;
 var musicfile = "mus.ogg";
 
 const end_frame = 7880;
+
+const supported_languages = {
+	"en": "English",
+	"jp": "Japanese",
+	"fr": "French",
+	"de": "German",
+	"es": "Spanish",
+	"it": "Italian"
+}
+
+language = getLanguage();
+
 var states = {
 	229: "dittogf",
 	601: "blank_black",
@@ -46,20 +58,33 @@ function frameSpawn() {// runs only with state change
 	
 	stateframe = 0;
 	if (state == "blank_white")
-		objects = {"fill": boxgen("#F8F8F8", 0, 0, -1, -1)}
+		objects = {"fill": boxgen(darkmode ? "#c8c8c8" : "#F8F8F8", 0, 0, -1, -1)}
 	
 	if (state == "blank_black")
 		objects = {"fill": boxgen("#000000", 0, 0, -1, -1)}
 	
-	if (state.startsWith("title"))
-		if (!(Object.keys(objects).includes("the_crystal")))
+	if (state.startsWith("title")) {
+		if (!(Object.keys(objects).includes("the_crystal"))) {
+			let gamelogo = "gamelogo_world";
+			let gameversion = "gameversion_world";
+			if (language == "jp") {
+				gamelogo = "gamelogo_jp";
+				gameversion = "";
+			} else if ("gameversion_" + language in spriteDef) {
+				gameversion = "gameversion_" + language;
+			}
+			
 			objects = {
 				"fill": boxgen("#000000", 0, 0, -1, -1),
 				"the_crystal": sprgen("the_crystal", 56, -50),
-				"gamelogo": sprgen("gamelogo_world", 8, 16, {"phase": 108}),
-				"gameversion": sprgen("gameversion_world", 36, 64, {"phase": 108}),
-				"suicune_run": sprgen("suicune_run_title0", 48, 88),
+				"gamelogo": sprgen(gamelogo, 8, 16, {"phase": 108}),
+				"suicune_run": sprgen("suicune_run_title0", 48, 88)
 				}
+			
+			if (gameversion)
+				objects["gameversion"] = sprgen(gameversion, 36, 64, {"phase": 108});
+		}
+	}
 	
 	if (state == "dittogf")
 		objects = {
@@ -67,17 +92,55 @@ function frameSpawn() {// runs only with state change
 			"dittogf": sprgen("dittobl0", 68, -22)
 			}
 	
-	if (state == "crystal")
-		objects = {
-			"fill": boxgen("#f8f8f8", 0, 0, -1, -1),
-			"letter_0": sprgen("crystal_c", 24, 64, {"opacity": 0}),
-			"letter_1": sprgen("crystal_r", 44, 64, {"opacity": 0}),
-			"letter_2": sprgen("crystal_y", 61, 64, {"opacity": 0}),
-			"letter_3": sprgen("crystal_s", 79, 64, {"opacity": 0}),
-			"letter_4": sprgen("crystal_t", 95, 64, {"opacity": 0}),
-			"letter_5": sprgen("crystal_a", 111, 64, {"opacity": 0}),
-			"letter_6": sprgen("crystal_l", 128, 64, {"opacity": 0})
+	if (state == "crystal") {
+		let letters = [
+			["c", 24],
+			["r", 44],
+			["y", 61],
+			["s", 79],
+			["t", 95],
+			["a", 111],
+			["l", 128]
+		];
+		
+		if (language == "fr" || language == "es") {
+			letters[2] = ["i", 62];
+		}
+		else if (language == "de") {
+			letters[2] = ["i", 62];
+			for (let i = 0; i < letters.length; i++) {
+				letters[i][1] -= 8;
 			}
+			letters[0][0] = "k";
+			letters.push(["l", 136]);
+		}
+		else if (language == "it") {
+			letters = [
+				["c", 8],
+				["r", 27],
+				["i", 44],
+				["s", 60],
+				["t", 76],
+				["a", 93],
+				["l", 109],
+				["l", 125],
+				["o", 140]
+			];
+		}
+		else { // en, jp, other
+			0; // already set, so skip
+		}
+		objects = {
+			"fill": boxgen(darkmode ? "#c8c8c8" : "#F8F8F8", 0, 0, -1, -1)
+		}
+		
+		const letter_objects = letters.reduce((acc, [char, pos], index) => {
+		  acc[`letter_${index}`] = sprgen(`crystal_${char}`, pos, 64, { opacity: 0 });
+		  return acc;
+		}, {});
+		
+		Object.assign(objects, letter_objects);
+	}
 	
 	if (state.startsWith("battle")) {
 		objects = {"fill": boxgen("#C06048", 0, 0, -1, -1)}
@@ -335,8 +398,9 @@ function frameTick() {// called each tick
 	
 	if (state == "crystal") {
 		var which = Math.floor(stateframe / 16);
-		if (which < 7)
+		if (which < Object.keys(objects).length - 1) {
 			spriteFade("letter_"+which, "in", which*16, ((which+1)*16-1));
+		}
 	}
 	
 	if (state == "battle_versus") {

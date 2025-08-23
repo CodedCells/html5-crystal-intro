@@ -27,6 +27,35 @@ var sandbox;
 var music;
 var started;
 
+let language = "en";
+
+function getLanguage() {
+	// Get all user-preferred languages (most preferred first)
+	const userLanguages = navigator.languages || [navigator.language || "en"];
+
+	for (let lang of userLanguages) {
+		lang = lang.toLowerCase();
+
+		// Try exact match (e.g. "en", "fr")
+		if (supported_languages[lang]) {
+			return lang;
+		}
+
+		// Try base language (e.g. "en-US" → "en")
+		const base = lang.split("-")[0];
+		if (supported_languages[base]) {
+			return base;
+		}
+	}
+}
+
+let darkmode = window.matchMedia("(prefers-color-scheme: dark)").matches;
+
+// Optional: react to changes in theme preference
+window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", (event) => {
+	darkmode = event.matches;
+});
+
 function play() {
 	console.log("would play");
 	setFontColor("#F8F8F8", "#000000");

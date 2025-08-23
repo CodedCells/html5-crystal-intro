@@ -13,7 +13,7 @@ var spriteDef = {
 	"suicune_run_title1":	{"w": 64,	"h": 48,	"x": 64,	"y": 112},
 	"suicune_run_title2": {"w": 64,	"h": 48,	"x": 64,	"y": 160},
 	"suicune_run_title3": {"w": 64,	"h": 48,	"x": 64,	"y": 208},
-	"suicune_anime":{"w": 192,	"h": 96,	"x": 128,	"y": 0},
+	"suicune_anime":{"w": 240,	"h": 96,	"x": 128,	"y": 0},
 	"suicune_versus": {"w": 64,	"h": 64,	"x": 128,	"y": 96},
 	"suicune_attack": {"w": 64,	"h": 64,	"x": 192,	"y": 96},
 	"wooper":		{"w": 32,	"h": 32,	"x": 64,	"y": 32},
@@ -57,17 +57,29 @@ var spriteDef = {
 	"unown_b7":		{"w": 32,	"h": 16,	"x": 224,	"y": 376},
 	"unown_b8":		{"w": 16,	"h": 16,	"x": 256,	"y": 376},
 	
-	"crystal_c":	{"w": 12, "h": 16, "x": 352, "y": 128},
-	"crystal_r":	{"w": 8, "h": 16, "x": 384, "y": 128},
-	"crystal_y":	{"w": 12, "h": 16, "x": 372, "y": 128},
-	"crystal_s":	{"w": 8, "h": 16, "x": 384, "y": 128},
-	"crystal_t":	{"w": 8, "h": 16, "x": 392, "y": 128},
-	"crystal_a":	{"w": 8, "h": 16, "x": 400, "y": 128},
-	"crystal_l":	{"w": 8, "h": 16, "x": 408, "y": 128},
+	
+	"crystal_a":	{"w": 8, "h": 16, "x": 417, "y": 168},
+	
+	"crystal_c":	{"w": 12, "h": 16, "x": 425, "y": 168},
+	
+	"crystal_i":	{"w": 8, "h": 16, "x": 437, "y": 168},
+	
+	"crystal_k":	{"w": 10, "h": 16, "x": 445, "y": 168},
+	
+	"crystal_l":	{"w": 8, "h": 16, "x": 455, "y": 168},
+	
+	"crystal_o":	{"w": 11, "h": 16, "x": 464, "y": 168},
+	
+	"crystal_r":	{"w": 8, "h": 16, "x": 476, "y": 168},
+	"crystal_s":	{"w": 8, "h": 16, "x": 485, "y": 168},
+	"crystal_t":	{"w": 8, "h": 16, "x": 493, "y": 168},
+	
+	"crystal_y":	{"w": 12, "h": 16, "x": 501, "y": 168},
+	
 	
 	"the_crystal":	{"w": 48, "h": 80, "x": 186, "y": 432},
 	"gamelogo_world":	{"w": 144, "h": 56, "x": 368, "y": 64},
-	"gamelogo_jp":	{"w": 144, "h": 56, "x": 368, "y": 64},
+	"gamelogo_jp":	{"w": 144, "h": 56, "x": 368, "y": 0},
 	
 	"gameversion_world": {"w": 96, "h": 8, "x": 416, "y": 128},
 	"gameversion_fr": {"w": 96, "h": 8, "x": 416, "y": 136},
