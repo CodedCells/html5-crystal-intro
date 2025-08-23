@@ -5,6 +5,7 @@ var framerate = 60;
 var audoff = 42;
 var musicfile = "mus.ogg";
 
+const end_frame = 7880;
 var states = {
 	229: "dittogf",
 	601: "blank_black",
@@ -196,11 +197,11 @@ function unownPulseTick(start, end, p) {
 function frameTick() {// called each tick
 	if (paused) return; // paused
 	
-	if (frame > -1 && frame < 99999 && music.paused) {
+	if (frame > -1 && music.paused) {
 		syncMusic();
 		music.play();
 		
-		if (frame > 7880) replay();
+		if (frame > end_frame) replay();
 	}
 	
 	frameSpawn();
