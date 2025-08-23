@@ -98,6 +98,9 @@ function draw() {
 		if (paused)
 			drawFontMap("= paused", 8, canvas.height-16);
 		
+		if (music.muted)
+			drawFontMap("  muted", 8, canvas.height-24);
+		
 		drawFontMap(stateframe, canvas.width-8, canvas.height-16, "right");
 		drawFontMap(frame, canvas.width-8, canvas.height-24, "right");
 	}
